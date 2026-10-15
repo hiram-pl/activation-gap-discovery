@@ -53,6 +53,27 @@ measure:
   peak_vram_gb: 9.41             # whole stack, including the CARLA server
   mean_gpu_utilization_percent: 15.6  # whole route stage; about 42% while driving
   service_units: 4.75            # check_usage.sh before and after; 3.67 SU per CPU-hour
+  # Reruns on a third install by Person 3, 2026-10-14 (docs/WHAT_BROKE.md). Not yet
+  # reviewed by the team. Run with this config's timeout_seconds: 600 and CARLA under
+  # a pty (scripts/step1.sbatch); the run above used 60 and no pty. Route completed in
+  # both, only the unpenalized minimum-speed checks. Service units not recorded.
+  reruns:
+    - job: 39934334
+      node: n0213
+      model_steps: 301
+      wall_clock_seconds: 547.7
+      simulated_seconds: 15.1
+      real_time_factor: 0.0276
+      peak_vram_gb: 9.39
+      mean_gpu_utilization_percent: 14.5
+    - job: 39936418
+      node: n0277
+      model_steps: 301
+      wall_clock_seconds: 354.7
+      simulated_seconds: 15.1
+      real_time_factor: 0.0426
+      peak_vram_gb: 9.41
+      mean_gpu_utilization_percent: 13.0
 
 outputs:
   results_dir: results/savio/
