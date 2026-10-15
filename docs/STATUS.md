@@ -202,13 +202,6 @@ Building the scoring layer before any rollout exists is deliberate, not
 opportunistic: `PRD.md` §9.1 wants it frozen and hash-committed before the test
 pool is generated.
 
-## Who is doing what
-
-- **Chris, Jerry** — harness, scoring, the step sequence.
-- **A collaborator** — SimLingo setup, on a branch, landing as a PR. Scope and
-  constraints: `docs/steps/adapter-simlingo-brief.md`. Partial progress expected,
-  because the GPU block limits how far it can go.
-
 ## In parallel with Step 1
 
 `docs/steps/gpu-free-queue.md`, in order. The top item is **B7's gap-signal
