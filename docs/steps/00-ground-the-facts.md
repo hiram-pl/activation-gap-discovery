@@ -55,17 +55,29 @@ RoboART 2502.06575v1, SAFE 2506.09937v2, RESample 2510.17640v4.
 
 `PRD.md` §17. Chris's account is already registered under `ic_cdss170fall`.
 
-- [ ] **Jerry: complete the per-user steps.** Sign the cluster access agreement on
+> **2026-10-05: GPU access exists.** The 2026-10-01 "no usable GPU partition"
+> result came from asking for the `savio_normal` QoS, which the GPU partitions do
+> not offer to `ic_` accounts. `sacctmgr show assoc` lists the allowance on
+> `savio3_gpu` and `savio4_gpu` (`docs/WHAT_BROKE.md`, `configs/cluster/savio.yaml`).
+
+- [x] **Jerry: complete the per-user steps.** Sign the cluster access agreement on
       first login; join the project under "My BRC Cluster Projects" in MyBRC; set
-      up one-time-password auth. Login is a PIN plus a 6-digit code. **This is not
-      instant and it blocks Step 1.**
-- [ ] Both: SSH to `hpc.brc.berkeley.edu` successfully.
+      up one-time-password auth. Login is a PIN plus a 6-digit code.
+- [x] Both: SSH to `hpc.brc.berkeley.edu` successfully.
 - [ ] Both: submit one trivial GPU job — `nvidia-smi` in a batch script is enough
       — and get output back. This is the actual done-condition. Everything else in
-      Step 1 assumes it.
-- [ ] Record what GPU you landed on and under which partition.
+      Step 1 assumes it. **One of us has** (`scripts/check_gpu.sbatch`,
+      2026-10-07, then Steps 1 and 2); the second is still open.
+- [x] Record what GPU you landed on and under which partition: RTX A5000 on
+      `savio4_gpu` for the GPU check, A40 on `savio3_gpu` for Steps 1 and 2.
 
 ### B2 · The four unknowns · ask, do not infer
+
+> **Partly answered without support.** 1: the partitions above. 3: 8 hours
+> (`sacctmgr show qos`, 2026-10-07). `savio_lowprio` is not associated with the
+> allowance. Still open from support: 2 (SU rate, though Step 1 and 2 job
+> charges are recorded in `PRD.md` §17.3), 4 (storage quota) and the job-array
+> width cap. Draft: `docs/savio-support-email.md`.
 
 Email the program contact at <https://datadisco.cdss.berkeley.edu/support>. Do
 not infer these from general Research IT docs — allowance terms are set per
@@ -87,12 +99,16 @@ control and §16.2 cannot close without it.
 
 ### B3 · Environment reconnaissance
 
-- [ ] Does a CARLA 0.9.15 container exist on Savio, or do we build one? Check
+- [x] Does a CARLA 0.9.15 container exist on Savio, or do we build one? Check
       whether Singularity/Apptainer is the required runtime — most HPC sites
-      disallow Docker.
-- [ ] Can CARLA render off-screen on a Savio GPU node? The handoff flagged this as
-      a live risk on NRP and it is the most likely Step 1 blocker.
+      disallow Docker. **Neither:** CARLA runs from the official Linux tarball
+      (`CONFLICTS.md` C20, pending review).
+- [x] Can CARLA render off-screen on a Savio GPU node? The handoff flagged this as
+      a live risk on NRP and it is the most likely Step 1 blocker. **Yes**, Step 1
+      on an A40, 2026-10-08.
 - [ ] Where do the SimLingo checkpoint and dataset go, given the quota answer?
+      The checkpoint lives under the clone's `.runtime/` on scratch
+      (`configs/cluster/savio.yaml`); the quota answer is still missing.
 - [ ] Note the module system's CUDA and Python versions.
 - [ ] **Ray on Slurm.** Can a Ray cluster come up inside an allocation — head
       node plus one worker, `ray.init()`, one remote task returning a value? This
@@ -108,11 +124,12 @@ control and §16.2 cannot close without it.
    paper-answerable ones; the model/repo-answerable ones moved to §16.11.
 2. ~~`CONFLICTS.md` D1 closed.~~ **Done — expansion ratio 1.**
 3. [ ] **Both of us have run a GPU job on Savio and know what hardware we got.**
-   ← the remaining blocker for Step 1.
+   One of us has; it no longer blocks Step 1, which passed on 2026-10-08.
 4. [ ] The support email is sent.
 5. ~~`docs/WHAT_BROKE.md` exists with its first entry.~~ **Done.**
 
-**Status: Track A done, Track B not started. Step 1 is blocked only on item 3.**
+**Status: Track A done; Track B mostly done (GPU access since 2026-10-05).
+Open: the second person's GPU job and the support email.**
 
 ## What we are explicitly not doing yet
 
