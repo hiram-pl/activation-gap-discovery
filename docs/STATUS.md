@@ -5,7 +5,7 @@ the end of any session that changes the answer**, before the context is lost.
 Tick the matching done-conditions in `docs/steps/progress.yaml` at the same time,
 and rewrite its `week` block each Friday.
 
-Last updated: 2026-10-09 (B7 definition drafted for approval; dashboard shows the activations)
+Last updated: 2026-10-15 (Step 1 rerun on a third install, unreviewed; stale "no GPU access" docs corrected)
 
 ---
 
@@ -37,11 +37,29 @@ load (hidden size 896, 24 layers), route 26956 completed with score 100 at
 container became the pinned tarball (`CONFLICTS.md` C20, pending review), and
 §16.2 has its inputs but is a design call for Chris and Jerry.
 
-Savio lessons from the night, all in `docs/WHAT_BROKE.md`: use the `gpu_a40`
-profile when the A5000 queue is long; always pass
-`--exclude=n0214.savio3,n0215.savio3` (faulty A40s); two routes share an A40
-safely now that their CARLA servers start one after the other; an evaluator
-silent for 15 minutes is stopped (`f111121`).
+**Step 1 rerun on a third install, 2026-10-14: findings from one person's runs,
+not yet reviewed by the team** (`docs/WHAT_BROKE.md`, 2026-10-14):
+
+- CARLA exited at once inside a batch job and started only when given a
+  controlling terminal. `scripts/step1.sbatch` now wraps the render stage in
+  `script -qec ... /dev/null`; `route_sample.sbatch` is unchanged.
+- `timeout_seconds: 60` was too short on a cold start: the first forward pass
+  took longer and the route was scored "Agent crashed". Raised to 600 in
+  `configs/rollout/step1-single-route.yaml` only, so that config no longer
+  matches the run that passed.
+- n0262.savio3 has a dead GPU (`nvidia-smi` finds no device) and fails jobs
+  instantly.
+- Two runs reproduced the route (same steps, simulated seconds and peak VRAM)
+  but not the speed: real-time factor 0.0276 on n0213 and 0.0426 on n0277,
+  against 0.0713 on n0214, with GPU utilization 13–15% in all three. §17.3's
+  budget rests on 0.0713, so if the slower figures hold, the measured costs
+  are optimistic. Not investigated further.
+
+Savio lessons, all in `docs/WHAT_BROKE.md`: use the `gpu_a40` profile when the
+A5000 queue is long; always pass `--exclude=n0214.savio3,n0215.savio3` (faulty
+A40s), and per the unreviewed 2026-10-14 finding also n0262.savio3; two routes
+share an A40 safely now that their CARLA servers start one after the other; an
+evaluator silent for 15 minutes is stopped (`f111121`).
 
 Track A (paper facts) is complete: six papers read, findings in
 `docs/step0-trackA-findings.md`, applied to `PRD.md`. Track B: the allowance
@@ -170,8 +188,13 @@ Steps 0–2 on Savio are done except Step 2's independent rerun. Do not reopen t
    first open question is whether B7 runs over the training data or the test
    pool; once approved, Step 4's layer sweep can run on the 220 Step 2 routes.
 4. Before the next campaign, raise `timeout_seconds` from 60 to Bench2Drive's
-   default 600 in the rollout configs (one route lost its setup to the 60 s
-   limit; `docs/WHAT_BROKE.md`).
+   default 600 in the rollout configs (one Step 2 route lost its setup to the
+   60 s limit, and the 2026-10-14 Step 1 rerun lost one too;
+   `docs/WHAT_BROKE.md`). Done for `step1-single-route.yaml` only; the Step 2,
+   paired and Mac configs still say 60.
+5. Review the 2026-10-14 Step 1 rerun (above): whether it counts toward Step 1's
+   "reproducible by whoever did not set it up" condition, and whether the
+   slower real-time factor changes §17.3's budget before §16.2 is decided.
 
 **An agent can reach the cluster only through a shared SSH connection that a
 person opened.** Login requires a PIN plus a rotating 6-digit code and `ic_`
@@ -201,11 +224,12 @@ Building the scoring layer before any rollout exists is deliberate, not
 opportunistic: `PRD.md` §9.1 wants it frozen and hash-committed before the test
 pool is generated.
 
-## In parallel with Step 1
+## GPU-free work
 
 `docs/steps/gpu-free-queue.md`, in order. The top item is **B7's gap-signal
-definition** (`PRD.md` §16.9, `CONFLICTS.md` C18). It must be written before
-anyone looks at real activations, and Step 3 will produce them soon.
+definition** (`PRD.md` §16.9, `CONFLICTS.md` C18), drafted in
+`docs/steps/b7-gap-signal.md` and awaiting approval. It must be approved before
+anyone looks at the activations already recorded on the Mac and on Savio.
 
 ## Open questions worth remembering
 
@@ -218,7 +242,9 @@ anyone looks at real activations, and Step 3 will produce them soon.
 - **Model architecture is now confirmed locally.** Hidden size 896 and 24
   decoder layers were read from the strict-loaded released model; query module
   paths are recorded in the SimLingo adapter README and PRD §16.11.
-- **The gap portfolio size** (`PRD.md` §16.2) is budget-bound and cannot close
-  until the rollout throughput measurement and the SU rate both exist.
+- **The gap portfolio size** (`PRD.md` §16.2) is budget-bound. Its inputs now
+  exist (Step 1's throughput, Step 2's charge of 4.1 SU per route), but the
+  unreviewed 2026-10-14 rerun measured a slower real-time factor on two other
+  nodes.
 - **`savio_lowprio` is not available to this allowance**, so `PRD.md` §17.2's
   preemptible fan-out plan needs revisiting before Step 2 (`CONFLICTS.md` C20).
