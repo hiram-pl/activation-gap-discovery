@@ -2,7 +2,7 @@
 # dashboard (dashboard/). Update it whenever docs/STATUS.md changes the answer.
 # Measured numbers are not copied here: `source` points at the config that holds them.
 
-updated: 2026-10-08
+updated: 2026-10-15
 # The step the team is working toward now. Earlier steps can still have open checks.
 current: 3
 
@@ -41,7 +41,7 @@ steps:
       - {text: Model architecture written into the PRD, done: true}
       - {text: Compute budget measured, done: true}
       - {text: Gap portfolio size decided, done: false}
-      - {text: Rerun by whoever did not set it up, done: false}
+      - {text: Rerun by whoever did not set it up, done: true}  # Person 3, 2026-10-14
   - id: 2
     title: Reproduce Bench2Drive-220
     source: configs/rollout/step2-bench2drive220.yaml

@@ -5,7 +5,7 @@ the end of any session that changes the answer**, before the context is lost.
 Tick the matching done-conditions in `docs/steps/progress.yaml` at the same time,
 and rewrite its `week` block each Friday.
 
-Last updated: 2026-10-15 (Step 1 rerun on a third install, unreviewed; stale "no GPU access" docs corrected)
+Last updated: 2026-10-15 (Step 1 rerun by Person 3 counted, findings unreviewed; stale "no GPU access" docs corrected)
 
 ---
 
@@ -35,10 +35,12 @@ load (hidden size 896, 24 layers), route 26956 completed with score 100 at
 **0.071× real time** and **9.4 GB** peak VRAM for 4.75 SU
 (`configs/rollout/step1-single-route.yaml`, `PRD.md` §17.3). Open items: the
 container became the pinned tarball (`CONFLICTS.md` C20, pending review), and
-§16.2 has its inputs but is a design call for Chris and Jerry.
+§16.2 has its inputs but is a design call for Person 1 and Person 2.
 
-**Step 1 rerun on a third install, 2026-10-14: findings from one person's runs,
-not yet reviewed by the team** (`docs/WHAT_BROKE.md`, 2026-10-14):
+**Step 1 rerun on a third install by Person 3, 2026-10-14.** It counts as Step 1's
+rerun by someone who did not set it up. The findings below are Person 3's and not
+yet reviewed by the team (`docs/WHAT_BROKE.md`, 2026-10-14; both runs are in the
+config's `measure.reruns`):
 
 - CARLA exited at once inside a batch job and started only when given a
   controlling terminal. `scripts/step1.sbatch` now wraps the render stage in
@@ -172,8 +174,8 @@ https://claude.ai/artifact/MuXb6v1BD4v1z9zbDAhDcr (private to its owner).
 Steps 0–2 on Savio are done except Step 2's independent rerun. Do not reopen the
 2026-10-07 `import carla` failure: it was a passing scratch fault.
 
-1. Step 2's done condition wants the run reproduced by whichever of Chris and
-   Jerry did not set it up. A full rerun costs about 910 SU; decide whether that
+1. Step 2's done condition wants the run reproduced by whichever of Person 1 and
+   Person 2 did not set it up. A full rerun costs about 910 SU; decide whether that
    or a handful of routes plus a rescore is enough. To rescore:
    `.runtime/policy-venv/bin/python adapters/simlingo/score_routes.py configs/rollout/step2-bench2drive220.yaml results/savio/39732614 results/savio/39732818 results/savio/39732819 results/savio/39732860 results/savio/39734524`
 2. Design calls for the two of you: close `PRD.md` §16.2 (gap portfolio size;
@@ -192,9 +194,8 @@ Steps 0–2 on Savio are done except Step 2's independent rerun. Do not reopen t
    60 s limit, and the 2026-10-14 Step 1 rerun lost one too;
    `docs/WHAT_BROKE.md`). Done for `step1-single-route.yaml` only; the Step 2,
    paired and Mac configs still say 60.
-5. Review the 2026-10-14 Step 1 rerun (above): whether it counts toward Step 1's
-   "reproducible by whoever did not set it up" condition, and whether the
-   slower real-time factor changes §17.3's budget before §16.2 is decided.
+5. Review the 2026-10-14 Step 1 rerun findings (above), in particular whether
+   the slower real-time factor changes §17.3's budget before §16.2 is decided.
 
 **An agent can reach the cluster only through a shared SSH connection that a
 person opened.** Login requires a PIN plus a rotating 6-digit code and `ic_`
