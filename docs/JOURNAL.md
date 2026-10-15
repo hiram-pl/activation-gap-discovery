@@ -5,6 +5,39 @@ Newest entry first. Rules for writing entries are in `CLAUDE.md` under "Journal"
 
 ---
 
+## 2026-10-15 — Stale "no GPU access" docs corrected, and a Step 1 rerun written up
+
+Several documents still said the Savio allowance had no usable GPU partition.
+That was corrected on 2026-10-05: the jobs had asked for the wrong QoS (quality
+of service, Slurm's per-account access class), and the allowance can use A40 and
+A5000 GPUs (`docs/WHAT_BROKE.md`). This session brought the README, the Step 0
+and Step 1 specs, the SimLingo setup brief, the GPU-free work queue and the
+draft support email up to date. Where a doc had a checklist, items that have
+since happened are ticked with where the evidence is; open items stay open. The
+B1 random baseline moved to "Done" in the queue, and B7's definition is shown
+as drafted and awaiting approval. `PRD.md`, `CONFLICTS.md` and the configs were
+not touched.
+
+It also recorded, in `docs/STATUS.md` and the Step 1 spec, the findings from a
+Step 1 rerun on a third install on 2026-10-14. These come from one person's
+runs and the team has not reviewed them. CARLA, the driving simulator, exited
+at once inside a batch job until it was given a controlling terminal. A 60 s
+client timeout was too short for the model's first forward pass on a cold
+start, and was raised to 600 s in the Step 1 config only. Node n0262.savio3 has
+a dead GPU. Two runs reproduced the route except for speed (measured): a
+real-time factor of 0.0276 on n0213 and 0.0426 on n0277, against 0.0713 on
+n0214 in the run that passed, with the GPU about 13–15% busy throughout. The
+budget in `PRD.md` §17.3 rests on 0.0713. Details are in the 2026-10-14 entry
+of `docs/WHAT_BROKE.md`.
+
+Left open: whether the rerun counts toward Step 1's "reproducible by whoever did
+not set it up" condition (`docs/steps/progress.yaml` is unchanged), why the
+real-time factor varies by node, and raising the timeout in the other rollout
+configs. The header comment in `configs/cluster/savio.yaml` still says no GPU
+job has run; it was left because configs were out of scope.
+
+---
+
 ## 2026-10-09 — B7 drafted, and the activations on the dashboard
 
 The team asked to see "the activation layer analysis" on the dashboard. No such
