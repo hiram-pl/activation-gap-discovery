@@ -3,7 +3,7 @@
 **Status: DRAFT, not approved.** Written 2026-10-09, before anyone has opened the
 activations recorded on the Mac or on Savio. `PRD.md` §16.9 and `CONFLICTS.md`
 C18 require this definition to exist before that, so B7 cannot be tuned to win
-or lose after the fact. Approval means Chris and Jerry edit or accept it and mark
+or lose after the fact. Approval means Person 1 and Person 2 edit or accept it and mark
 it approved here. It is then hash-committed with the other baseline configs
 (`PRD.md` §9.3, fairness rules) and not changed again; any later change is
 labelled post hoc wherever B7 is reported.

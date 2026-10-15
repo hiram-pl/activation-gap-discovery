@@ -38,7 +38,7 @@ interrupting `F.conv2d` inside the InternViT encoder on the first forward pass.
 Not a crash; a timeout. Raised to Bench2Drive's default 600 in
 `configs/rollout/step1-single-route.yaml`, as `docs/STATUS.md` next-step 4
 already proposed. Note this means the rerun is no longer byte-identical to the
-config Jerry ran.
+config Person 2 ran.
 
 **3. n0262.savio3 has a dead GPU.** Job 39923359 FAILED in 00:00:00 with
 exit 6 at the script's first `nvidia-smi`: "Unable to determine the device
@@ -52,7 +52,7 @@ submission.
 
 | run | node | steps | sim s | wall s | peak VRAM | RTF | GPU util |
 |---|---|---|---|---|---|---|---|
-| 39732394 (Jerry) | n0214 | 299 | 15.0 | 210.4 | 9.41 | 0.0713 | 15.6% |
+| 39732394 (Person 2) | n0214 | 299 | 15.0 | 210.4 | 9.41 | 0.0713 | 15.6% |
 | 39934334 | n0213 | 301 | 15.1 | 547.7 | 9.39 | 0.0276 | 14.5% |
 | 39936418 | n0277 | 301 | 15.1 | 354.7 | 9.41 | 0.0426 | 13.0% |
 
@@ -512,7 +512,7 @@ so Savio can clone it.
 
 **Did:** shipped the branch as a git bundle instead (`git bundle create`, `scp`
 to `dtn.brc.berkeley.edu`, `git clone` from the file on Savio). It works but the
-Savio copy goes stale with every new commit. Chris to add Imhaohao as a
+Savio copy goes stale with every new commit. Person 1 to add Imhaohao as a
 collaborator.
 
 **Resolved 2026-10-07:** the same push succeeded; Imhaohao now has write access.

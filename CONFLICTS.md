@@ -19,7 +19,7 @@ The brief built §17 entirely on Savio under `ic_cdss170fall`. The handoff said
 primary compute is NRP Nautilus and that Savio needs a faculty allowance the team
 may not have.
 
-**Resolution:** Savio is primary — Chris's account is registered under the
+**Resolution:** Savio is primary — Person 1's account is registered under the
 project, so the handoff's doubt is resolved by fact on the ground. NRP is the
 documented fallback and the home for the describability model. The handoff's
 compute *sizing* assumptions were written for NRP hardware, so they do not

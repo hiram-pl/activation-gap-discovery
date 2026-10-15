@@ -10,7 +10,7 @@ from the handoff, which is backed by a 175-record evidence ledger
 the brief said, the change is listed in `CONFLICTS.md` with a reason. Where a
 fact is marked unverified here, treat it as unverified.
 
-**Team:** two people, Chris and Jerry. There are no workstreams and no role
+**Team:** two people, Person 1 and Person 2. There are no workstreams and no role
 blinding. Work proceeds as numbered steps, one at a time, each with a spec and a
 done-condition.
 
@@ -388,7 +388,7 @@ necessary and which are chosen.
 - The sealed answer key is read by nothing except scoring code. Enforced by repo
   layout and a CI check (§14), not by good intentions.
 - One of us owns re-checking arXiv, monthly. The closest papers are months old.
-  Default: Jerry, who owns the citation audit.
+  Default: Person 2, who owns the citation audit.
 
 ## 7. Honda and AV relevance
 
@@ -1293,12 +1293,12 @@ support contact, not to guesswork.
 ### 17.1 Access
 
 Cluster: Savio, Berkeley Research Computing, via SSH to `hpc.brc.berkeley.edu`.
-Project: **`ic_cdss170fall`**. Chris's account is registered under it.
+Project: **`ic_cdss170fall`**. Person 1's account is registered under it.
 
 Per-user steps, in order: sign the cluster user access agreement on first login;
 join the project under "My BRC Cluster Projects" in the MyBRC portal; set up
 one-time-password authentication. Login is a PIN plus a 6-digit authenticator
-code. **Jerry needs to complete these too, and it is not instant.** This blocks
+code. **Person 2 needs to complete these too, and it is not instant.** This blocks
 Step 1, so it happens now.
 
 **The `ic_` prefix matters.** This is an Instructional Computing Allowance held by
