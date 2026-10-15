@@ -2,8 +2,8 @@
 # Savio reconnaissance — run this on a LOGIN node right after you authenticate.
 # Read-only, no jobs submitted, takes seconds. Paste the output back.
 #
-# Answers Step 1 stages 1.1-1.2 and several Step 0 Track B items without
-# waiting for the support email. See docs/steps/01-smallest-rollout.md
+# Answers Step 1 stages 1.1-1.2 and several Step 0 Track B items.
+# See docs/steps/01-smallest-rollout.md
 #
 #   bash savio_recon.sh 2>&1 | tee ~/savio-recon.txt
 

@@ -12,7 +12,7 @@ Nothing here needs a GPU. Both tracks can run in parallel.
 
 ---
 
-## Track A — Paper facts (Chris) · **DONE 2026-10-01**
+## Track A — Paper facts (Person 1) · **DONE 2026-10-01**
 
 Findings: [`docs/step0-trackA-findings.md`](../step0-trackA-findings.md), applied
 to `PRD.md` in commit `3d2e394`.
@@ -51,16 +51,16 @@ RoboART 2502.06575v1, SAFE 2506.09937v2, RESample 2510.17640v4.
       withholding and the Fail2Drive toolbox API (2026-10-06). Still open:
       PDMLite-F2D on a route XML we authored.
 
-## Track B — Savio access (Jerry primary, Chris confirms)
+## Track B — Savio access (Person 2 primary, Person 1 confirms)
 
-`PRD.md` §17. Chris's account is already registered under `ic_cdss170fall`.
+`PRD.md` §17. Person 1's account is already registered under `ic_cdss170fall`.
 
 > **2026-10-05: GPU access exists.** The 2026-10-01 "no usable GPU partition"
 > result came from asking for the `savio_normal` QoS, which the GPU partitions do
 > not offer to `ic_` accounts. `sacctmgr show assoc` lists the allowance on
 > `savio3_gpu` and `savio4_gpu` (`docs/WHAT_BROKE.md`, `configs/cluster/savio.yaml`).
 
-- [x] **Jerry: complete the per-user steps.** Sign the cluster access agreement on
+- [x] **Person 2: complete the per-user steps.** Sign the cluster access agreement on
       first login; join the project under "My BRC Cluster Projects" in MyBRC; set
       up one-time-password auth. Login is a PIN plus a 6-digit code.
 - [x] Both: SSH to `hpc.brc.berkeley.edu` successfully.
@@ -71,31 +71,21 @@ RoboART 2502.06575v1, SAFE 2506.09937v2, RESample 2510.17640v4.
 - [x] Record what GPU you landed on and under which partition: RTX A5000 on
       `savio4_gpu` for the GPU check, A40 on `savio3_gpu` for Steps 1 and 2.
 
-### B2 · The four unknowns · ask, do not infer
+### B2 · The four unknowns · do not infer
 
-> **Partly answered without support.** 1: the partitions above. 3: 8 hours
-> (`sacctmgr show qos`, 2026-10-07). `savio_lowprio` is not associated with the
-> allowance. Still open from support: 2 (SU rate, though Step 1 and 2 job
-> charges are recorded in `PRD.md` §17.3), 4 (storage quota) and the job-array
-> width cap. Draft: `docs/savio-support-email.md`.
-
-Email the program contact at <https://datadisco.cdss.berkeley.edu/support>. Do
-not infer these from general Research IT docs — allowance terms are set per
+Do not infer these from general Research IT docs — allowance terms are set per
 agreement, and we inherited cost estimates sized for different hardware.
 
-Ask for:
-
-1. GPU partition names available to `ic_cdss170fall`.
-2. The Service Unit charging rate for GPU jobs on those partitions.
-3. Maximum wall time.
+1. ~~GPU partition names available to `ic_cdss170fall`.~~ The partitions above
+   (`sacctmgr show assoc`).
+2. The Service Unit charging rate for GPU jobs on those partitions. Step 1 and 2
+   job charges are recorded in `PRD.md` §17.3; the rate itself is unconfirmed.
+3. ~~Maximum wall time.~~ 8 hours (`sacctmgr show qos`, 2026-10-07).
 4. Storage quota, and where large datasets should live. We need ~150 GB for
-   activations at three layers, more if Mode A ever runs.
+   activations at three layers, more if Mode A ever runs. Unknown.
 
-Also worth asking, since it shapes Step 4's fan-out: whether `savio_lowprio` is
-available to an `ic_` allowance, and whether job arrays have a width cap.
-
-**Send this today even if the papers take longer.** The reply time is outside our
-control and §16.2 cannot close without it.
+Also shaping Step 4's fan-out: `savio_lowprio` is not associated with the
+allowance; whether job arrays have a width cap is unknown.
 
 ### B3 · Environment reconnaissance
 
@@ -125,11 +115,10 @@ control and §16.2 cannot close without it.
 2. ~~`CONFLICTS.md` D1 closed.~~ **Done — expansion ratio 1.**
 3. [ ] **Both of us have run a GPU job on Savio and know what hardware we got.**
    One of us has; it no longer blocks Step 1, which passed on 2026-10-08.
-4. [ ] The support email is sent.
-5. ~~`docs/WHAT_BROKE.md` exists with its first entry.~~ **Done.**
+4. ~~`docs/WHAT_BROKE.md` exists with its first entry.~~ **Done.**
 
 **Status: Track A done; Track B mostly done (GPU access since 2026-10-05).
-Open: the second person's GPU job and the support email.**
+Open: Person 1's GPU job, and the SU rate and storage quota.**
 
 ## What we are explicitly not doing yet
 
