@@ -5,9 +5,23 @@ and config.
 **Depends on:** a usable GPU partition on Savio.
 **Blocks:** Step 2 (reproduction) and, through the throughput number, §16.2.
 
-> **Unblocked 2026-10-05; not yet run.** The allowance has GPU partitions; the
-> earlier rejection was the wrong QoS (`docs/WHAT_BROKE.md`). Partition, QoS,
-> gres and CPUs live in `configs/cluster/savio.yaml`; never hardcode them.
+> **Passed 2026-10-08** (job 39732394, one A40): real off-screen camera image,
+> strict checkpoint load, route 26956 completed at 0.0713× real time and 9.4 GB
+> peak VRAM (`configs/rollout/step1-single-route.yaml`). Done conditions 1–3
+> are met; 4 has measured inputs but §16.2 is still a design call; 5 is open.
+> The allowance has GPU partitions; the 2026-10-01 rejection was the wrong QoS
+> (`docs/WHAT_BROKE.md`). Partition, QoS, gres and CPUs live in
+> `configs/cluster/savio.yaml`; never hardcode them.
+>
+> **Reproduction on a third install, 2026-10-14 (one person's runs, not yet
+> reviewed by the team).** Two runs (jobs 39934334 and 39936418) completed the
+> route with the same step count, simulated seconds and peak VRAM, but a slower
+> real-time factor: 0.0276 on n0213 and 0.0426 on n0277, against 0.0713 on
+> n0214. Mean GPU utilization was 13–15% in all three. Getting there needed a
+> controlling terminal for CARLA in the batch job and `timeout_seconds` raised
+> from 60 to 600, so the config is no longer identical to the one that passed.
+> Details in `docs/WHAT_BROKE.md`. Whether this counts toward done condition 5
+> is for the team to decide.
 >
 > How to run it, from a clone of this repository under
 > `/global/scratch/users/$USER` on a login node:
@@ -16,7 +30,9 @@ and config.
 > 2. `uv run --no-project --python 3.10 --with pyyaml adapters/simlingo/setup_savio.py`
 >    (stage 1.1 and the 1.3 downloads; ~20 GB, rerun after any interruption)
 > 3. `bash scripts/submit.sh gpu scripts/check_gpu.sbatch` (Step 0's done-condition)
-> 4. `bash scripts/submit.sh gpu scripts/step1.sbatch` (stages 1.2-1.4 in order)
+> 4. `bash scripts/submit.sh gpu scripts/step1.sbatch` (stages 1.2-1.4 in order).
+>    Use the `gpu_a40` profile when the A5000 queue is long, and exclude the
+>    known-faulty nodes listed in `docs/STATUS.md`.
 >
 > Stage 1.1 deviates from the container plan below: CARLA runs from the official
 > Linux tarball on the GPU node, as upstream SimLingo does, because no published
