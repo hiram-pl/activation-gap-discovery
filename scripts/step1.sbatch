@@ -18,7 +18,7 @@ mkdir -p "$OUT"
 nvidia-smi
 
 echo "=== 1.2 off-screen rendering: camera pixels and vehicle control ==="
-"$PY" adapters/simlingo/run_savio.py render --output "$OUT/render"
+script -qec "$PY adapters/simlingo/run_savio.py render --output $OUT/render" /dev/null
 
 echo "=== 1.3 checkpoint: strict load and finite waypoints ==="
 HF_HUB_OFFLINE=1 "$PY" adapters/simlingo/verify_checkpoint.py --output "$OUT/model-smoke.json"
