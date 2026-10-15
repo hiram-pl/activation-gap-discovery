@@ -1,7 +1,7 @@
 # Unsupervised Failure-Axis Discovery for Driving Policies
 
 UC Berkeley CDSS Data Discovery × 99P Labs / Honda Research Institute USA.
-Person 1 and Person 2, mentored by Ryan Lingo.
+Mentored by Ryan Lingo.
 
 ## The one-sentence version
 
