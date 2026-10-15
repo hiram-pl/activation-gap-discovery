@@ -42,19 +42,23 @@ and why.
 
 ## Where things stand
 
-**Blocked on Savio GPU access.** Login works, but `ic_cdss170fall` has only
-`savio2_gpu` (retired); `savio3_gpu` and `savio4_gpu` are rejected. A support
-request is open — see [`docs/savio-support-email.md`](docs/savio-support-email.md).
-Step 1 cannot start until that clears.
+[`docs/STATUS.md`](docs/STATUS.md) is the current answer; this is the outline.
 
-Working in the meantime on the GPU-free half of the harness
-([`docs/steps/gpu-free-queue.md`](docs/steps/gpu-free-queue.md)). Done so far:
-the scoring layer, the data contracts, the sealed-key CI guard, config hashing,
-and the B1 random baseline — 45 tests, all passing without a GPU.
+**Savio has GPU access.** The 2026-10-01 "no usable GPU partition" finding was
+wrong: the jobs had asked for the wrong QoS, and `ic_cdss170fall` is associated
+with `savio3_gpu` (A40) and `savio4_gpu` (A5000). Corrected 2026-10-05
+([`docs/WHAT_BROKE.md`](docs/WHAT_BROKE.md)).
 
-That ordering is deliberate rather than opportunistic: the scoring code wants to
-be frozen and hash-committed *before* the test pool exists (`PRD.md` §9.1), so
-building it now is correct.
+**Steps 1 and 2 passed on Savio on 2026-10-08**: one SimLingo route end to end
+on an A40, then Bench2Drive-220 at one seed. Each still has open done-conditions
+(an independent rerun, the gap portfolio size), listed in `docs/STATUS.md`.
+
+The GPU-free half of the harness was built first, while access looked blocked
+([`docs/steps/gpu-free-queue.md`](docs/steps/gpu-free-queue.md)): the scoring
+layer, the data contracts, the sealed-key CI guard, config hashing, and the B1
+random baseline. That ordering was deliberate rather than opportunistic: the
+scoring code wants to be frozen and hash-committed *before* the test pool
+exists (`PRD.md` §9.1).
 
 ### Setup
 
@@ -65,12 +69,13 @@ pip install -r requirements.txt
 ```
 
 `requirements.txt` is the harness only. SimLingo, CARLA and torch are the policy
-stack and belong in `adapters/simlingo/` once Step 1 establishes what works.
+stack and live in `adapters/simlingo/`: `setup_savio.py` installs them on Savio,
+and the adapter README covers the Mac.
 
 ### Running the checks
 
 ```bash
-python -m pytest -q                        # 45 tests, no GPU needed
+python -m pytest -q                        # no GPU needed
 python scripts/check_sealed_imports.py     # sealed-key guard
 python scripts/check_configs.py            # config hashes + unresolved TBDs
 ```
