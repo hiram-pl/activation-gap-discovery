@@ -5,14 +5,41 @@ Newest entry first. Rules for writing entries are in `CLAUDE.md` under "Journal"
 
 ---
 
+## 2026-10-15 (later) — Step 1 rerun counted, names anonymised, support email removed
+
+Follow-up to the entry below, on Person 3's decisions. Person 3 is the team
+member who ran the 2026-10-14 Step 1 rerun; they are neither of the two people
+who set Step 1 up.
+
+- **The rerun counts** as Step 1's "rerun by whoever did not set it up", so that
+  check is now ticked in `docs/steps/progress.yaml`, the Step 1 spec and
+  `docs/STATUS.md`. This reverses the entry below, which left it open. The
+  measurements (the slower real-time factor in particular) are still not
+  reviewed by the team.
+- **The two rerun measurements are recorded** in
+  `configs/rollout/step1-single-route.yaml` under `measure.reruns`, beside the
+  original run, which stays the top-level figure.
+- **Names were replaced** with Person 1 and Person 2 throughout the docs,
+  including `PRD.md`, `CONFLICTS.md` and old log entries, at Person 3's request.
+  Identifiers were left alone: the LICENSE holder, the GitHub repository name
+  and the Savio login names. `PRD.md` still describes the team as two people.
+- **The draft Savio support email was deleted** and references to it removed;
+  the questions still open (SU rate, storage quota, job-array width) now live in
+  the Step 0 spec. The 2026-10-01 `docs/WHAT_BROKE.md` entry still names the
+  file as history.
+- The outdated "no GPU job has run yet" comment in `configs/cluster/savio.yaml`
+  was removed.
+
+---
+
 ## 2026-10-15 — Stale "no GPU access" docs corrected, and a Step 1 rerun written up
 
 Several documents still said the Savio allowance had no usable GPU partition.
 That was corrected on 2026-10-05: the jobs had asked for the wrong QoS (quality
 of service, Slurm's per-account access class), and the allowance can use A40 and
 A5000 GPUs (`docs/WHAT_BROKE.md`). This session brought the README, the Step 0
-and Step 1 specs, the SimLingo setup brief, the GPU-free work queue and the
-draft support email up to date. Where a doc had a checklist, items that have
+and Step 1 specs, the SimLingo setup brief and the GPU-free work queue up to
+date. Where a doc had a checklist, items that have
 since happened are ticked with where the evidence is; open items stay open. The
 B1 random baseline moved to "Done" in the queue, and B7's definition is shown
 as drafted and awaiting approval. `PRD.md`, `CONFLICTS.md` and the configs were
