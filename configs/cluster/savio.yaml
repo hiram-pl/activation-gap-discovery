@@ -1,11 +1,5 @@
 # Cluster settings. The single place any partition, QoS or GPU type is named.
 # Scripts read this; no script hardcodes a partition.
-#
-# STATUS 2026-10-05: GPU access EXISTS. `sacctmgr show assoc` for imhaohao lists
-# ic_cdss170fall on savio3_gpu (a40_gpu3_ica, v100_gpu3_ica, gtx2080_gpu3_ica)
-# and savio4_gpu (a5k_gpu4_ica). The 2026-10-01 "rejected" result came from
-# submitting with savio_normal, which these partitions do not accept for ic_
-# accounts. No GPU job has run yet: scripts/check_gpu.sbatch is the first one.
 
 account: ic_cdss170fall
 login_host: hpc.brc.berkeley.edu
