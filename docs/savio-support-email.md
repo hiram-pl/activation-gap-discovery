@@ -1,15 +1,27 @@
-# Savio support email — send today
+# Savio support email — draft, partly answered
 
-> **2026-10-05: question 1 is answered without support.** `sacctmgr show assoc`
-> lists `savio4_gpu` (`a5k_gpu4_ica`) and `savio3_gpu` (`a40_gpu3_ica` and
-> others); see `configs/cluster/savio.yaml`. If this is not sent yet, drop question 1.
-> The SU rate, wall-time, storage, job-array and rendering questions still stand.
+> **Out of date: we are not blocked.** The draft below was written on 2026-10-01,
+> when GPU access looked missing. It was the wrong QoS (`docs/WHAT_BROKE.md`,
+> 2026-10-05), and Steps 1 and 2 have since run on Savio. If this has not been
+> sent, drop the "currently blocked" paragraph and these answered questions:
+>
+> - **1** (partitions): `sacctmgr show assoc` lists `savio4_gpu` (`a5k_gpu4_ica`)
+>   and `savio3_gpu` (`a40_gpu3_ica` and others); `configs/cluster/savio.yaml`.
+> - **3** (wall time): 8 hours, 4 running jobs per user (`sacctmgr show qos`,
+>   2026-10-07).
+> - **5** (lowprio): not associated with the allowance.
+> - **7** (containers): moot; CARLA runs from the release tarball
+>   (`CONFLICTS.md` C20, pending review).
+> - **8** (off-screen rendering): works on an A40 (Step 1, 2026-10-08).
+>
+> Still worth asking: 2 (SU rate, to check the charges recorded in `PRD.md`
+> §17.3), 4 (storage quota) and 6 (job-array width).
 
 To: the Data Discovery program's Savio contact via
 <https://datadisco.cdss.berkeley.edu/support>
 
-Send this before anything else. The reply time is outside our control, and
-answers 1 and 2 are half the input to `PRD.md` §16.2 (gap portfolio size).
+Originally: send this before anything else. The reply time is outside our
+control, and answer 2 is part of the input to `PRD.md` §16.2 (gap portfolio size).
 Ask the program, not general Research IT — `ic_` allowance terms are set per
 agreement.
 
