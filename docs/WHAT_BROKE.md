@@ -8,6 +8,74 @@ did. Dead ends count. "Turned out to be my typo" counts.
 
 ---
 
+## 2026-10-14 — Step 1 on a third install: CARLA needs a TTY, 60 s is too short, and the real-time factor is 2.6x slower
+
+**Expected:** a clean setup plus `scripts/step1.sbatch` reproduces Step 1.
+
+**Three failures in order, then a reproduction that disagrees on speed.**
+
+**1. CARLA exits immediately in a batch job.** Four lines in `server.log`
+(`results/savio/39791889/render/`), no error, then `wait_for_server` waits the
+full 300 s for a server that is already gone. Ruled out: the node (n0279.savio3
+healthy, other users ran 35 min to 18 h jobs on it the same day); the install
+(CarlaUE4-Linux-Shipping 111 MB executable, 36 GB tree, 84/84 tests); the port
+(20000, 28890, 28893 all start by hand); stdin alone (`< /dev/null`
+interactively still starts); `DISPLAY` and `VK_ICD_FILENAMES` (both empty in
+working runs); the Popen call (reproduced with `stdout=file`,
+`stderr=STDOUT`, `start_new_session=True`, survived 25 s); the environment
+(batch vs interactive `env` differs only in Slurm bookkeeping). In a batch job
+`tty` reports "not a tty", fd 0 is `/dev/null`, fd 1 and 2 are the output file.
+Wrapping the command in `script -qec "<cmd>" /dev/null` gives it a pty and job
+39793734 then COMPLETED: camera_verified true, camera mean 132.0 std 55.2, 100
+ticks, 4.36 m, 5.93 GB on an A40. Applied to `scripts/step1.sbatch`; the
+cleaner fix is a `pty.openpty()` stdin in `carla_server()`.
+
+**2. `timeout_seconds: 60` is too short on a cold start.** Job 39932658 reached
+stage 1.4, ran 189 s, then `RouteCompletionTest` FAILURE at 0.0% with
+"Failed - Agent crashed". The traceback is
+`scenario_manager.py` line 87, `Agent took longer than 60s to send its command`,
+interrupting `F.conv2d` inside the InternViT encoder on the first forward pass.
+Not a crash; a timeout. Raised to Bench2Drive's default 600 in
+`configs/rollout/step1-single-route.yaml`, as `docs/STATUS.md` next-step 4
+already proposed. Note this means the rerun is no longer byte-identical to the
+config Jerry ran.
+
+**3. n0262.savio3 has a dead GPU.** Job 39923359 FAILED in 00:00:00 with
+exit 6 at the script's first `nvidia-smi`: "Unable to determine the device
+handle for GPU0: 0000:C1:00.0: Unknown Error / No devices were found". Fourth
+known-bad node after n0214, n0215. Jobs fail on it instantly so the scheduler
+keeps handing it out. Suggest a `gpu.exclude_nodes` field in
+`configs/cluster/savio.yaml` rather than passing `--exclude` on every
+submission.
+
+**4. Step 1 reproduces, except the real-time factor.** Two runs after the fixes:
+
+| run | node | steps | sim s | wall s | peak VRAM | RTF | GPU util |
+|---|---|---|---|---|---|---|---|
+| 39732394 (Jerry) | n0214 | 299 | 15.0 | 210.4 | 9.41 | 0.0713 | 15.6% |
+| 39934334 | n0213 | 301 | 15.1 | 547.7 | 9.39 | 0.0276 | 14.5% |
+| 39936418 | n0277 | 301 | 15.1 | 354.7 | 9.41 | 0.0426 | 13.0% |
+
+Route completed in all three, no collisions, red lights, lane departures or
+route deviation; only the unpenalized minimum-speed checks. Steps, simulated
+seconds and peak VRAM agree. The real-time factor spans 2.6x across three
+nodes, and mean GPU utilization is 13-15% throughout, so the stack is waiting on
+CPU or the filesystem rather than computing. The second run was faster than the
+first, so some of it is cache warming, but n0277 is still 40% short of n0214.
+`PRD.md` §17.3's budget and therefore §16.2's portfolio size rest on 0.0713;
+at 0.04 the 220-route sweep is about 55 GPU-hours rather than 31. Not
+investigated further.
+
+**Also:** CARLA takes three consecutive ports per server
+(28890-28892 observed) and **segfaults** on a collision rather than erroring:
+`bind: Address already in use` then Signal 11. Possibly the startup race worked
+around in `route_sample.sbatch`.
+
+**Also:** tmux sessions are per login node. A dropped connection that reconnects
+to a different `lnNNN` cannot see the earlier session.
+
+---
+
 ## 2026-10-08 — Why the Mac beat the paper: mostly the route sample
 
 **Expected (2026-10-06 entry below):** Savio in bfloat16 would show whether the
