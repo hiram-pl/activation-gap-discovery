@@ -1,6 +1,8 @@
 # SimLingo setup — scoped brief for a collaborator
 
-**Status:** open for work. Lands as a PR; review before merge.
+**Status:** largely done (2026-10-08). The four deliverables under "What done
+looks like" are met or replaced; the constraints under "Please do not" still
+apply to anyone working in `adapters/simlingo/`. Lands as a PR; review before merge.
 **Relates to:** `PRD.md` §8.2 (adapter), `docs/steps/01-smallest-rollout.md`
 (Step 1, which this unblocks part of).
 
@@ -11,28 +13,30 @@ re-deriving things that are already settled.
 
 ## The situation you are walking into
 
-> **Superseded 2026-10-05:** the GPU block below was the wrong QoS, not missing
-> access, and the closed-loop route now runs on a Mac and is built for Savio.
-> Current state: `docs/STATUS.md`.
+**Savio has GPU access.** This brief was first written on 2026-10-01, when the
+allowance appeared to have no usable GPU partition. That was wrong: the jobs had
+asked for the `savio_normal` QoS, which the GPU partitions do not offer to `ic_`
+accounts. `ic_cdss170fall` is associated with `savio3_gpu` (A40, `a40_gpu3_ica`)
+and `savio4_gpu` (A5000, `a5k_gpu4_ica`); corrected 2026-10-05
+(`docs/WHAT_BROKE.md`). Partition, QoS, gres and CPUs live in
+`configs/cluster/savio.yaml`.
 
-**We have no usable GPU partition.** Savio login works, but the allowance
-`ic_cdss170fall` has only `savio2_gpu`, which is retired; `savio3_gpu` and
-`savio4_gpu` are rejected. A support request is open and unanswered.
-
-So **the closed-loop part of SimLingo setup cannot be finished right now**, by
-anyone. That is not a reason to avoid the work — it is a reason to be clear about
-which half is blocked, so you do not burn time discovering it.
-
-What is genuinely available without a GPU partition is a surprising amount: the
-checkpoint loads on CPU, the architecture facts we need can be read off the
-config, and the container can be built and tested locally.
+Since then the closed-loop route has run on a Mac (2026-10-02) and on a Savio
+A40 (Step 1, 2026-10-08), and Bench2Drive-220 has run on Savio (Step 2).
+Current state: `docs/STATUS.md`.
 
 ## Highest-value thing you could do
 
 **Read the architecture off the loaded SimLingo checkpoint and write it down.**
 
-This closes `PRD.md` §16.11, it needs no GPU, and three downstream estimates are
-currently resting on an unverified number:
+> **Done 2026-10-02.** The released checkpoint strict-loads on CPU and MPS with
+> hidden size 896 and 24 decoder layers, and Step 1 strict-loaded it on a Savio
+> A40. Query module paths are in the adapter README and `PRD.md` §16.11; the
+> checkpoint SHA256 is in `configs/setup/simlingo-artifacts.yaml`; the
+> Bench2Drive version is v0.0.3.
+
+This closes `PRD.md` §16.11, it needs no GPU, and three downstream estimates were
+resting on an unverified number:
 
 - **`d`, the hidden size.** The 99p handoff says 896. The SimLingo paper does not
   state it. **Every storage estimate in `PRD.md` §12.1 and the SAE dictionary size
@@ -54,7 +58,17 @@ unresolved.
 Checkpoint: `RenzKa/simlingo` on Hugging Face. Apache-2.0 code; note the
 *dataset* is Wayve non-commercial, so do not redistribute data.
 
-## Also valuable, also GPU-free
+## Also valuable
+
+> **Replaced and done.** Savio runs CARLA from the official 0.9.15 Linux
+> tarball, not a container (`CONFLICTS.md` C20, pending review). Off-screen
+> rendering works on a Savio A40: Step 1 (job 39732394) read a real, non-black
+> camera image.
+>
+> **Unreviewed finding, 2026-10-14 (one person's runs):** on a third install,
+> CARLA exited at once inside a batch job and worked only when given a
+> controlling terminal (`script -qec ... /dev/null`, now in
+> `scripts/step1.sbatch`). Details in `docs/WHAT_BROKE.md`.
 
 **The container.** CARLA 0.9.15, plus the SimLingo agent. Two things worth
 knowing before you start:
@@ -81,7 +95,7 @@ These are not territorial; each has a specific reason.
   says build it by refactoring after one policy works. Keep
   `adapters/simlingo/` concrete and specific. Generalising is Step 11.
 - **Do not touch `src/harness/`, `src/baselines/`, or `tests/`.** That is the
-  scoring layer; it is finished, tested (45 tests), and intended to be frozen and
+  scoring layer; it is finished, tested, and intended to be frozen and
   hash-committed before any test pool exists (`PRD.md` §9.1). If you think it is
   wrong, say so rather than editing it — two of its behaviours look like bugs and
   are deliberate, and `CLAUDE.md` lists them.
@@ -110,14 +124,17 @@ These are not territorial; each has a specific reason.
 
 ## What "done" looks like
 
-There is no single done condition here, which is deliberate — the GPU block means
-partial progress is the expected outcome. Any one of these is a useful PR:
+There was no single done condition here, because when this was written the GPU
+block made partial progress the expected outcome. Any one of these was a useful PR:
 
-1. The architecture facts, written into the config with the placeholders removed.
-2. A container that starts CARLA and accepts a client connection.
-3. Evidence that off-screen rendering works, with a non-black camera frame.
-4. A documented failure: "off-screen rendering does not work on X because Y" is
-   genuinely valuable, because it is the trigger for replanning toward NRP rather
-   than Savio for rollouts.
+1. ~~The architecture facts, written into the config with the placeholders
+   removed.~~ **Done 2026-10-02.**
+2. ~~A container that starts CARLA and accepts a client connection.~~
+   **Replaced** by the release tarball (`CONFLICTS.md` C20, pending review);
+   the tarball server accepts clients on Savio.
+3. ~~Evidence that off-screen rendering works, with a non-black camera frame.~~
+   **Done 2026-10-08**, Step 1 on a Savio A40.
+4. A documented failure: "off-screen rendering does not work on X because Y".
+   Not needed for Savio; it would still be the trigger for replanning toward NRP.
 
 Partial is fine. Write down where you stopped and what you learned.
