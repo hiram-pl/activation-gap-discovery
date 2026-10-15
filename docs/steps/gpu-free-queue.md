@@ -1,12 +1,18 @@
 # GPU-free work queue
 
-What can be built while Savio GPU access is blocked. Everything here runs on a
-laptop: no GPU, no cluster, no partition name, no rollouts.
+Work that needs no GPU. Everything here runs on a laptop: no GPU, no cluster, no
+partition name, no rollouts.
+
+**Where it came from.** This queue was written on 2026-10-01, when Savio GPU
+access looked blocked. It was not: the jobs had asked for the wrong QoS, and the
+allowance has had GPU partitions all along (corrected 2026-10-05,
+`docs/WHAT_BROKE.md`; Steps 1 and 2 ran on Savio on 2026-10-08). The items stay
+useful because they need no GPU, not because the GPU is unavailable.
 
 **Why this is not filler.** Most of it is work that has to happen anyway, and
-some of it is better done now. The scoring layer in particular wants to be
+some of it is better done early. The scoring layer in particular wants to be
 frozen and hash-committed *before* the test pool exists (`PRD.md` §9.1), so
-building it during a GPU block is the correct order, not a consolation prize.
+building it first was the correct order, not a consolation prize.
 
 **Standing constraint:** nothing here may assume a GPU model or a partition
 name. Cluster facts live in `configs/cluster/savio.yaml` and are read, never
@@ -48,31 +54,33 @@ cannot silently proceed on a placeholder.
 
 ### ✅ Cluster indirection · `configs/cluster/savio.yaml`, `scripts/submit.sh`
 Single place any partition or GPU type is named. `submit.sh` refuses GPU
-submission while `gpu.available: false` and prints why.
+submission while `gpu.available: false` and prints why. Both GPU profiles
+(`gpu`, `gpu_a40`) are `available: true` since 2026-10-05.
+
+### ✅ B1 random baseline · `src/baselines/random_baseline.py`
+The only baseline that needs no policy at all: draw M random subsets of failing
+rollout ids, sized from the primary method's axis sizes. It exercises the whole
+scoring path with a real method object rather than a test fixture, and emits a
+valid `Directive`. Closes a line item from `PRD.md` §9.3.
 
 ---
 
 ## Next, in value order
 
-### 1 · B1 random baseline, end to end
-The only baseline that needs no policy at all: draw M random subsets of failing
-rollout ids, sized from the primary method's axis sizes. Fully implementable now,
-and it exercises the whole scoring path with a real method object rather than a
-test fixture.
+### 1 · B7's gap-signal definition · `PRD.md` §16.9, `CONFLICTS.md` C18
+**Drafted 2026-10-09, awaiting approval:** `docs/steps/b7-gap-signal.md`.
 
-Deliverable: `src/baselines/random_baseline.py` plus tests, emitting a valid
-`Directive`. Closes a real line item from `PRD.md` §9.3.
-
-### 2 · B7's gap-signal definition · `PRD.md` §16.9, `CONFLICTS.md` C18
 **Must exist before Step 6 or B7 is not a fair baseline.** Dr. VLA never proposes
 memorized-feature concentration as a gap signal — that construction is ours, so
 we owe it a written definition: how concentration is measured, over what
 partition, how it ranks into axes.
 
-Writing it now, before we have seen any activations, is also the honest order:
-we cannot tune it to win or lose after the fact.
+Writing it before anyone has seen the activations is also the honest order: we
+cannot tune it to win or lose after the fact. Activations have been recorded on
+the Mac and on Savio since 2026-10-06 and stay unopened until the draft is
+approved.
 
-### 3 · Synthetic end-to-end dry run
+### 2 · Synthetic end-to-end dry run
 Generate a fake rollout corpus with known planted structure, run B1 and a stub
 discovery method through scoring, and produce the actual report artifact. This
 smokes out the whole pipeline's plumbing and gives us the results-table format
@@ -82,41 +90,43 @@ It also answers a question we should not discover late: what does the scoring
 report look like when a method recovers nothing? The negative-result paper needs
 that table to be legible.
 
-### 4 · `harness/PREREGISTRATION.md` skeleton
+### 3 · `harness/PREREGISTRATION.md` skeleton
 The §13.1 go/no-go rule, the efficacy thresholds, the gate AUROC threshold, the
 primary-method declaration. **The entire value of pre-registration is that it is
-written before the numbers exist**, so drafting it during a GPU block is exactly
-right. Fill the thresholds now; leave only the primary-method choice open, since
-that legitimately depends on the Step 4 sweep.
+written before the numbers exist**, so it must be drafted before Step 4's sweep
+produces any. Fill the thresholds now; leave only the primary-method choice
+open, since that legitimately depends on the Step 4 sweep.
 
-### 5 · Gap predicate schema and the public practice gaps
+### 4 · Gap predicate schema and the public practice gaps
 The predicate DSL from `PRD.md` §9.1, plus the two public practice gaps that live
 in the dev pool. Needs no rollouts — only a schema and a matcher that can be
 tested against synthetic metadata.
 
 Keep sealed predicates out of this; only the practice gaps are public.
 
-### 6 · Describability gate scaffolding
+### 5 · Describability gate scaffolding
 The two-model protocol with its shuffle control (`PRD.md` §9.2). The prompt
 templates, the held-out split logic, and the AUROC computation are all
-testable on synthetic descriptions. The actual VLM calls need NRP, not Savio,
-so this may be runnable even while Savio is blocked.
+testable on synthetic descriptions. The actual VLM calls need NRP, not Savio.
 
-### 7 · Results database schema
+### 6 · Results database schema
 Config hash → run record → metrics. `PRD.md` §6.2 requires every paper number to
 be regenerable from a query. Pure schema work.
 
 ---
 
-## Deliberately not now
+## Deliberately not in this queue
 
-- **Anything touching the SimLingo checkpoint.** It needs ~2 GB of download and,
-  for a forward pass, ideally a GPU. The architecture facts it would resolve
-  (`PRD.md` §16.11) are Step 1 items. If a non-Savio GPU appears, this jumps the
-  queue, since it de-risks Step 3's hook placement.
 - **The adapter interface.** `PRD.md` §8.2 says explicitly to build it by
   refactoring after SimLingo works. Designing it now would be the abstraction
-  mistake the brief warned about.
-- **Ray orchestration.** One route does not need it and we cannot test the
-  Slurm interaction without a partition.
-- **Container work.** Needs the cluster.
+  mistake the brief warned about. That refactor is Step 11.
+
+Three items listed here on 2026-10-01 have since moved outside the queue:
+
+- **The SimLingo checkpoint.** Strict-loaded on CPU and MPS on 2026-10-02, then
+  on a Savio A40 in Step 1; the architecture facts (`PRD.md` §16.11) are closed.
+- **Ray orchestration.** Not used so far: Step 2's 220 routes ran as a plain
+  Slurm job array (`scripts/route_sample.sbatch`), two routes per A40. Whether
+  later steps still need Ray (`PRD.md` §11) is not decided.
+- **Container work.** Replaced: Savio runs CARLA from the release tarball
+  (`CONFLICTS.md` C20, pending review).
